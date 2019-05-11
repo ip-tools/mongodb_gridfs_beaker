@@ -33,7 +33,7 @@ except ImportError:
     import pickle
 
 class MongoDBGridFSNamespaceManager(NamespaceManager):
-    
+
     clients = SyncDict()
 
     def __init__(self, namespace, url=None, data_dir=None, lock_dir=None, **params):
@@ -49,7 +49,7 @@ class MongoDBGridFSNamespaceManager(NamespaceManager):
         if not url:
             raise MissingCacheParameter("MongoDB url is required")
 
-        for k, v in parse_uri(url).iteritems():
+        for k, v in parse_uri(url).items():
             setattr(self, "url_%s"%k, v)
 
         if not self.url_database or not self.url_nodelist:
@@ -66,14 +66,14 @@ class MongoDBGridFSNamespaceManager(NamespaceManager):
 
         params = {}
         params['slaveok'] = self.url_options.get("slaveok", False)
-        if self.url_options.has_key("replicaset"):
+        if "replicaset" in self.url_options:
             params['replicaset'] = self.url_options["replicaset"] or ""
 
         conn = Connection(host_uri, **params)
         db = conn[self.url_database]
 
         if self.url_username:
-            log.info("[MongoDBGridFS] Attempting to authenticate %s/%s " % 
+            log.info("[MongoDBGridFS] Attempting to authenticate %s/%s " %
                      (self.url_username, self.url_password))
             if not db.authenticate(self.url_username, self.url_password):
                 raise InvalidCacheBackendError('Cannot authenticate to MongoDB.')
@@ -123,7 +123,7 @@ class MongoDBGridFSNamespaceManager(NamespaceManager):
 
         try:
             value = pickle.loads(value)
-        except Exception, e:
+        except Exception as e:
             log.exception("[MongoDBGridFS] Failed to unpickle value.")
             return None
 
@@ -138,7 +138,7 @@ class MongoDBGridFSNamespaceManager(NamespaceManager):
     def has_key(self, key):
         return key in self
 
-    def set_value(self, key, value):
+    def set_value(self, key, value, expiretime=None):
         query = {'namespace': self.namespace, 'filename': key}
         log.debug("[MongoDBGridFS %s] Set Key: %s" % (self.gridfs, query))
 

@@ -20,7 +20,7 @@ setup(
     keywords = 'mongo mongodb gridfs beaker cache session',
     license = 'New BSD License',
     url = 'https://github.com/loucash/mongodb_gridfs_beaker',
-    tests_require = ['nose', 'webtest'],
+    tests_require = ['nose', 'WebTest'],
     test_suite='nose.collector',
     classifiers = [
         'Development Status :: 4 - Beta',
@@ -43,7 +43,7 @@ setup(
     """,
     requires=['pymongo', 'beaker'],
     install_requires = [
-        'pymongo>=1.9',
+        'pymongo>=1.9,<3.0.0',
         'beaker>=1.5'
     ],
     data_files=[("", ['README.rst'])],
