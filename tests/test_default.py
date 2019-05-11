@@ -10,6 +10,9 @@ from webtest import TestApp
 import unittest
 import time
 
+# Compatibility between Python 2 <=> Python 3
+IS_PYTHON_3 = (sys.version_info[0] >= 3)
+
 # Compatibility between pymongo<>3.0.0.
 try:
     from pymongo import MongoClient as Connection
@@ -117,9 +120,12 @@ def cache_manager_app(environ, start_response):
 
 
 def _b(value):
-    # Utility function as WebTest and its machinery want to
-    # yield byte-responses when running on Python3.
-    return bytes(value, 'ascii')
+    # Utility function as WebTest and its machinery want
+    # to yield byte-responses when running on Python3.
+    if IS_PYTHON_3:
+        return bytes(value, 'ascii')
+    else:
+        return value
 
 
 def test_session():
