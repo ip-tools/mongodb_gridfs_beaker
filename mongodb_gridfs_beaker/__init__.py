@@ -20,8 +20,16 @@ from beaker.exceptions import InvalidCacheBackendError, MissingCacheParameter
 from beaker.synchronization import file_synchronizer
 from beaker.util import SyncDict, verify_directory
 
+# Compatibility between pymongo<>3.0.0.
+import pymongo
+from distutils.version import LooseVersion
+try:
+    from pymongo import MongoClient as Connection
+    from pymongo.read_preferences import ReadPreference
+except ImportError:
+    from pymongo.connection import Connection
+
 from pymongo.uri_parser import parse_uri
-from pymongo.connection import Connection
 from pymongo import ASCENDING, DESCENDING
 
 from gridfs import GridFS
@@ -64,8 +72,15 @@ class MongoDBGridFSNamespaceManager(NamespaceManager):
             'mongodb://%s' % (",".join(["%s:%s" % h for h in self.url_nodelist]))
         log.info("[MongoDBGridFS] Host URI: %s" % host_uri)
 
+        is_pymongo3 = LooseVersion(pymongo.version) >= LooseVersion('3.0.0')
+
         params = {}
-        params['slaveok'] = self.url_options.get("slaveok", False)
+        if "slaveok" in self.url_options and self.url_options['slaveok']:
+            if is_pymongo3:
+                params['readPreference'] = ReadPreference.SECONDARY_PREFERRED
+            else:
+                params['slaveok'] = True
+
         if "replicaset" in self.url_options:
             params['replicaset'] = self.url_options["replicaset"] or ""
 

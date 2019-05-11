@@ -43,7 +43,7 @@ setup(
     """,
     requires=['pymongo', 'beaker'],
     install_requires = [
-        'pymongo>=1.9,<3.0.0',
+        'pymongo>=1.9',
         'beaker>=1.5'
     ],
     data_files=[("", ['README.rst'])],

@@ -7,9 +7,14 @@ from beaker.middleware import CacheMiddleware, SessionMiddleware
 from beaker.exceptions import InvalidCacheBackendError
 from nose import SkipTest
 from webtest import TestApp
-from pymongo.connection import Connection
 import unittest
 import time
+
+# Compatibility between pymongo<>3.0.0.
+try:
+    from pymongo import MongoClient as Connection
+except ImportError:
+    from pymongo.connection import Connection
 
 try:
     clsmap['mongodb_gridfs']._init_dependencies()
